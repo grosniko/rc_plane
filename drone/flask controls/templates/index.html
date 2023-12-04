@@ -1,0 +1,155 @@
+<html>
+  <head>
+    <title>RC COCKPIT</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  </head>
+  <body>
+    <h1>RC COCKPIT</h1>
+    <!-- <img src="{{ url_for('video_feed') }}"> -->
+    <br><br>
+    <h1>CONTROL</h1>
+    <h2>DIRECTION & CAMERA</h2>
+    <label for="left_aileron">left</label>
+    <input type="range" onchange="move_servo(this)" id="left_aileron" min="0" max="180" value=90>
+    <label for="right_aileron">right</label>
+    <input type="range" onchange="move_servo(this)" id="right_aileron" min="0" max="180" value=90>
+    <label for="rudder">rudder</label>
+    <input type="range" onchange="move_servo(this)" id="rudder" min="0" max="180" value=90>
+    <label for="elevator">elevator</label>
+    <input type="range" onchange="move_servo(this)" id="elevator" min="0" max="180" value=90>
+    <label for="camera">camera</label>
+    <input type="range" onchange="move_servo(this)" id="camera" min="0" max="180" value=90>
+    <br><br>
+    <div id="joyDiv"></div>
+    <br><br>
+    <h2>THROTTLE: <span id="throttle_value">0</span></h2>
+    <button class="button-17" id="on" val={{min_throttle}} role="button" onclick="throttle_control(this)">ON</button>
+    <button class="button-17" id="off" val=0 role="button" onclick="throttle_control(this)">OFF</button>
+    <br><br>
+    <button class="button-17" id="lessless" val=-100 role="button" onclick="throttle_control(this)">--</button>
+    <button class="button-17" id="less" val=-10 role="button" onclick="throttle_control(this)">-</button>
+    <button class="button-17" id="more" val=10 role="button" onclick="throttle_control(this)">+</button>
+    <button class="button-17" id="moremore" val=100 role="button" onclick="throttle_control(this)">++</button>
+  </body>
+<script src="{{ url_for('static', filename='joy.min.js') }}">
+  </script>
+<script>
+function move_servo(e){
+  var val = e.value
+  var data = {"angle": val, "servo_name": e.getAttribute("id")}
+  fetch(`${window.origin}/move_servo`, {
+    method: "POST",
+    credentials: "include",
+    body: JSON.stringify(data),
+    cache: "no-cache",
+    headers: new Headers({
+      "content-type": "application/json"
+    })
+  }).then((resp)=>{
+    if (resp.statusText == "OK"){
+      if(data.servo_name.includes("aileron")){
+        if(data.servo_name.includes("right")){
+          document.querySelector("#left_aileron").value = 180 - val
+        } else {
+          document.querySelector("#right_aileron").value = 180 - val
+        }
+      }
+    }
+  })
+}
+
+function throttle_control(e){
+  var variation = parseInt(e.getAttribute("val"))
+  var data = {"button":e.id, "variation": variation}
+  var throttle_number = document.querySelector("#throttle_value")
+  fetch(`${window.origin}/throttle_control`, {
+    method: "POST",
+    credentials: "include",
+    body: JSON.stringify(data),
+    cache: "no-cache",
+    headers: new Headers({
+      "content-type": "application/json"
+    })
+  }).then(function(response){
+      response.json().then((data)=>{
+      if(data["msg"] == "OK"){
+          
+          throttle_number.innerHTML = data["pulse"]
+
+
+      } else {
+        alert("Not communicating with the motor!!! Problem with connection.")
+      }
+    })
+
+  })
+
+}
+
+
+var joy = new JoyStick('joyDiv',{
+    // The ID of canvas element
+    title: 'joystick',
+    // width/height
+    width: 500,
+    height: 500,
+    // Internal color of Stick
+    internalFillColor: '#00AA00',
+    // Border width of Stick
+    internalLineWidth: 2,
+    // Border color of Stick
+    internalStrokeColor: '#003300',
+    // External reference circonference width
+    externalLineWidth: 2,
+    //External reference circonference color
+    externalStrokeColor: '#008000',
+    // Sets the behavior of the stick
+    autoReturnToCenter: true
+    
+}, function(stickData){
+  var aileron_angle = 90
+  var rudder_angle = 90
+  var right_aileron = document.querySelector("#right_aileron")
+  var left_aileron = document.querySelector("#left_aileron")
+  var rudder = document.querySelector("#rudder")
+  var elevator = document.querySelector("#elevator")
+
+  if(stickData.x < 0){
+    var x_pos = 100 + parseInt(stickData.x)
+    aileron_angle = Math.round((x_pos / 100) * 90)
+    
+  } else {
+    aileron_angle = 90 + Math.round((stickData.x / 100) * 90)
+  }
+
+  if(stickData.y < 0){
+    var y_pos = 100 + parseInt(stickData.y)
+    
+    elevator_angle = Math.round((y_pos / 100) * 90)
+    
+  } else {
+    elevator_angle = 90 + Math.round((stickData.y / 100) * 90)
+  }
+  
+  right_aileron.value = aileron_angle
+  left_aileron.value = 180 - aileron_angle
+  rudder.value = aileron_angle
+  elevator.value = elevator_angle
+
+  if (aileron_angle % 5 == 0 && aileron_angle > 0 && aileron_angle < 180){
+    move_servo(right_aileron)
+    move_servo(rudder)
+  }
+  if(elevator_angle % 5 == 0 && elevator_angle > 0 && elevator_angle < 180){
+    move_servo(elevator)
+  }
+
+  
+
+
+
+});
+
+</script>
+
+</html>

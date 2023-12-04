@@ -1,0 +1,14 @@
+#configuration for the waveshare to be included in /etc/network/interfaces.d/wwan0 (sudo nano /etc/network/interfaces.d/wwan0)
+
+auto wwan0
+iface wwan0 inet manual
+ pre-up ifconfig wwan0 down
+ pre-up sudo systemctl unmask NetworkManager.service
+ pre-up sudo systemctl disable NetworkManager.service
+ pre-up sudo qmicli -d /dev/cdc-wdm0 --dms-set-operating-mode="online"
+ pre-up sudo ip link set wwan0 down
+ pre-up echo 'Y' | sudo tee /sys/class/net/wwan0/qmi/raw_ip
+ pre-up sudo ip link set wwan0 up
+ pre-up sudo qmicli --device=/dev/cdc-wdm0 --device-open-proxy --wds-start-netw>
+ pre-up sudo udhcpc -i wwan0
+ pre-up ip a s wwan0

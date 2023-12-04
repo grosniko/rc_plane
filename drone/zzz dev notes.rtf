@@ -1,0 +1,163 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2580
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fswiss\fcharset0 ArialMT;\f2\fnil\fcharset0 AndaleMono;
+\f3\fmodern\fcharset0 Courier;\f4\fswiss\fcharset0 Arial-BoldMT;}
+{\colortbl;\red255\green255\blue255;\red26\green26\blue26;\red255\green255\blue255;\red59\green255\blue7;
+\red0\green0\blue0;\red0\green0\blue0;\red236\green236\blue237;\red67\green67\blue67;}
+{\*\expandedcolortbl;;\cssrgb\c13333\c13333\c13333;\cssrgb\c100000\c100000\c100000;\cspthree\c49865\c97845\c29777;
+\csgray\c0\c90000;\cssrgb\c0\c0\c0;\cssrgb\c94118\c94118\c94510;\cssrgb\c33333\c33333\c33333;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww15880\viewh8440\viewkind0
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 RC PLANE CONTROL\
+\
+\'97\'97\
+\
+DITCHED THE PARALLEL FLASK SERVER TO THE PHP APACHE SERVER!\
+\
+In the end, just using the same interface for camera and controls.\
+\
+Index calls pca.php, which opens a socket connection to control.py, which activates and manages the propeller motor and servo motors.\
+\
+\
+INTERNET 4G\
+\'97\'97\'97\
+\pard\pardeftab720\sa300\partightenfactor0
+
+\f1\fs30 \cf2 \cb3 \expnd0\expndtw0\kerning0
+Sooo\'85 that was WAY harder than I thought. But I did it somehow. I\'92m a copy/paste coder so I barely know what any of this code means, but I\'92m sure there is something redundant. I\'92ll let real coders optimize this solution.\
+This solution will try to raise network interfaces at startup and fail, but its ok because internet connectivity still works. For my purposes, I have auto login so I added the .sh script in .bashrc. You can try and see if it works in local.rc to see if it boots up before login. Anyways, here is what I managed to get:\
+create a file wwan0\
+sudo nano /etc/network/interfaces.d/wwan0\
+type this into the file (WARNING: it does not show in these comments, but before EVERY \'93pre-up\'94 you should add an empty space like this " pre-up" and not just \'93pre-up\'94):\
+auto wwan0\cb1 \uc0\u8232 \cb3 iface wwan0 inet manual\cb1 \uc0\u8232 \cb3  pre-up ifconfig wwan0 down \cb1 \uc0\u8232 \cb3  pre-up sudo systemctl unmask NetworkManager.service\cb1 \uc0\u8232 \cb3  pre-up sudo systemctl disable NetworkManager.service\cb1 \uc0\u8232 \cb3  pre-up sudo qmicli -d /dev/cdc-wdm0 --dms-set-operating-mode=\'93online\'94\cb1 \uc0\u8232 \cb3  pre-up sudo ip link set wwan0 down\cb1 \uc0\u8232 \cb3  pre-up echo \'91Y\'92 | sudo tee /sys/class/net/wwan0/qmi/raw_ip\cb1 \uc0\u8232 \cb3  pre-up sudo ip link set wwan0 up\cb1 \uc0\u8232 \cb3  pre-up sudo qmicli --device=/dev/cdc-wdm0 --device-open-proxy --wds-start-network=\'93ip-type=4,  apn=YOUR_APN_HERE\'94 --client-no-re> pre-up sudo udhcpc -i wwan0\cb1 \uc0\u8232 \cb3 pre-up ip a s wwan0\
+then create anywhere you want a .sh script. I called mine 4g.sh and put it in /home/USERNAME\
+my 4g.sh file:\
+#! /bin/sh\
+sudo systemctl unmask ModemManager.service\cb1 \uc0\u8232 \cb3 sudo systemctl disable ModemManager.service\cb1 \uc0\u8232 \cb3 sudo systemctl enable dhcpcd\cb1 \uc0\u8232 \cb3 sudo systemctl start dhcpcd\
+sudo qmicli -d /dev/cdc-wdm0 --dms-set-operating-mode=\'93online\'94\cb1 \uc0\u8232 \cb3 sudo ip link set wwan0 down\cb1 \uc0\u8232 \cb3 echo \'91Y\'92 | sudo tee /sys/class/net/wwan0/qmi/raw_ip\cb1 \uc0\u8232 \cb3 sudo ip link set wwan0 up\
+sudo qmicli --device=/dev/cdc-wdm0 --device-open-proxy --wds-start-network=\'93ip-type=4, apn=YOUR_APN\'94 --client-no-release-cid\
+sudo udhcpc -i wwan0\
+ip a s wwan0\
+FINALLY, you do this:\
+sudo nano .bashrc\cb1 \uc0\u8232 \cb3 (or sudo nano /home/USERNAME/.bashrc)\
+and in this file you add a line\
+sudo sh /home/USERNAME/4g.sh\
+And thats it.\
+As I said, if you need login capability, add this last line NOT into .bashrc but into rc.local\
+sudo nano /etc/rc.local\
+and maybe it works.\
+This has been a tough journey. I can\'92t believe something so obvious is so difficult!\
+Now I have to understand why the damn internet is so slow, I can barely connect to it thru ssh\'85 but at least it starts on startup. If anybody has tips on how to improve slow internet with the qmicli setup, please share\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 \cb1 \kerning1\expnd0\expndtw0 \
+\
+\
+\'97\'97\'97\
+Removed PIN from SIM card\
+\
+This installs wave share, but no internet connectivity. Can make calls and GPS works\
+\
+https://core-electronics.com.au/guides/raspberry-pi/raspberry-pi-4g-gps-hat/\
+\
+In comments guy that gives resources on how to do this\
+\
+Then tried to follow steps here:\
+\
+https://www.twilio.com/docs/iot/supersim/getting-started-super-sim-raspberry-pi-waveshare-4g-hat\
+\'97> instead of \'93super\'94 you type \'93free\'94\
+\
+Also followed steps here:\
+\
+https://www.framboise314.fr/carte-gsm-4g-lte-nadhat-mk2-usb-et-hat-raspberry-pi-avec-simcom-a7682e/\
+\'97> the minimum -s part\
+\
+Almost there, connection there but not entirely\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f2\fs32 \cf4 \cb5 \CocoaLigature0 IPV6CP: timeout sending Config-Requests\
+
+\f0\fs24 \cf0 \cb1 \CocoaLigature1 \
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+\cf0 If when you write sudo pon you have something like\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f2\fs32 \cf4 \cb5 \CocoaLigature0 Device ttyUSB2 is locked by pid 2911\
+
+\f0\fs24 \cf0 \cb1 \CocoaLigature1 \
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+\cf0 Then type\
+\
+Sudo kill -9 2911\
+\
+\
+notes on my work\
+\
+- first did flask with camera, but kind of slow\
+- then thought multithread will be faster, so found a script to do multithread, not much difference but kept that\
+- for servos, using package gpizero for simplicity, however servo jitters\
+- downloaded pigpio so jitter disappears\
+ \'97\'97> https://github.com/gpiozero/gpiozero/issues/780\
+ \'97\'97> https://abyz.me.uk/rpi/pigpio/download.html\
+\'97 flask does not work good, so I did this apache server / php camera which works much better but kept flask app for controlling the motors\
+\
+\
+How to run:\
+1. Connect to Raspberry pi SSH\
+2. Run \'93./start.sh\'94\
+3. Run \'93python app.py\'94\
+4. Remote it - open http for php and http for flask\
+\
+\'97\'97\'97\'97\'97\'97\'97\
+\
+Fucked shit up with raspberry pI? \
+\
+To get stuff back running, follow these steps:\
+\
+\
+\'97\'97\'97\
+REINSTALLING SOFTWARE AND ERASE SHIT\
+\
+Download or open the Raspberry Pi Imager\
+Click on settings and fill in the hostname and wifi data, activate ssh\
+\'97> if the computer gives you shit, type \
+\
+	
+\f2\fs32 \cf4 \cb5 \CocoaLigature0 sudo nano ~/.ssh/known_hosts
+\f0\fs24 \cf0 \cb1 \CocoaLigature1 \
+	and remove the line that starts with pilot.local\
+\
+Raspberry Pi 4 \'97> choose the 64-bit lite software, console only\
+sudo raspi-config \'97>  Autologin\
+sudo apt-get update && sudo apt-get upgrade\
+\
+REINSTALLING PIP\
+Sudo apt install python3-pip\
+\
+REINSTALLING REMOTE IT\
+DO NOT DO THIS:!!!\
+Go to remote.it and remove device\
+Add new device and copy paste code\
+\
+DO THIS:\
+Apt install remoteit\
+Claim the device on remote.it\
+https://app.remote.it/#/add\
+\
+FOR DRONE\
+Enable legacy camera\
+sudo apt-get install pigpio\
+Add HTTP connection in remote.it\
+Connect to: 127.0.0.1:5000\
+Activate I2C\
+\
+\
+EDIT WIFI SETTINGS\
+\pard\pardeftab720\sl501\partightenfactor0
+
+\f3\fs26\fsmilli13200 \cf6 \cb7 \expnd0\expndtw0\kerning0
+sudo nano /etc/wpa_supplicant/wpa_supplicant.conf\
+\pard\pardeftab720\partightenfactor0
+
+\f4\b\fs28\fsmilli14300 \cf8 \cb3 wpa_cli list_networks\
+wpa_cli select_network #}

@@ -1,0 +1,71 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2580
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fnil\fcharset0 Menlo-Regular;\f2\froman\fcharset0 Times-Roman;
+\f3\fnil\fcharset0 AndaleMono;\f4\fnil\fcharset0 Monaco;}
+{\colortbl;\red255\green255\blue255;\red210\green50\blue85;\red83\green83\blue83;\red241\green241\blue241;
+\red0\green0\blue0;\red11\green12\blue12;\red59\green255\blue7;\red0\green0\blue0;\red39\green123\blue69;
+\red0\green0\blue0;}
+{\*\expandedcolortbl;;\cssrgb\c86667\c29020\c40784;\cssrgb\c40000\c40000\c40000;\cssrgb\c95686\c95686\c95686;
+\cssrgb\c0\c0\c0;\cssrgb\c4706\c5098\c5490;\cspthree\c49865\c97845\c29777;\csgray\c0\c90000;\cssrgb\c18039\c54510\c34118;
+\cssrgb\c0\c0\c0\c2353;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww16180\viewh8740\viewkind0
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 \
+RASPBERRY PI SETUP\
+1. INSTALL BULLSEYE 32 BIT RASPBERRY PI SOFT\
+2. Enable I2C in sudo rasps-config \'97> 3. Interface Options \'97> I2C\
+3. Enable legacy camera support Interface options \'97> Enable legacy camera\
+4. Download PHP 7.4 \'97 sudo apt-get install php\
+5. Install remote.it by going to remote.it and adding a raspberry pi device then copying code\
+6. Install pip 
+\f1\fs36 \cf2 \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 sudo\cf3 \cb4 \strokec3  \cf2 \cb1 \strokec2 apt\cf3 \cb4 \strokec3  \cf2 \cb1 \strokec2 install\cf3 \cb4 \strokec3  python3-pip
+\f0\fs24 \cf0 \cb1 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 \
+\
+\
+4G CONNECTIVITY - WAVESHARE\
+1. Follow instructions here to install drivers and activate waveshare\
+1. Add into home/pi/ 4g.sh file\
+2. Type \'93sudo nano /etc/network/interfaces.d/wwan0\'94 and copy wwan0 file contents inside\
+3. Run sh 4g.sh to activate 4g connectivity with waveshare\
+\
+CAMERA & PCA / SERVO & ESC / PROPELLER CONTROL\
+1. Download PHP Cam from here into raspberry pi\
+https://elinux.org/RPi-Cam-Web-Interface\
+ \'97\'97> WARNING, TO INSTALL TYPE \'93bash install.sh\'94 and NOT \'93sh install.sh\'94\
+ \'97\'97> set PHP version to 7.4 in the menu\
+ \'97\'97>  TO DEBUG PHP sudo 
+\f2 \cf5 \expnd0\expndtw0\kerning0
+tail -f /var/log/apache2/error.log
+\f0 \cf0 \kerning1\expnd0\expndtw0 \
+2. Go to /var/www/folder_name and replace the index.php file with the one in the PHP folder\
+3. Add also new files: pca.php and into js folder servos.js\
+4. Add python files control.py, esc.py, pca.php, servo_motors.py\
+5. type \'93sudo pip3 install adafruit-circuitpython-servokit\'94 to install package for PCA to control multiple servos\
+6. Download pigpio library \'97 sudo apt-get install pigpio\
+7. Enable it on startup \'97 
+\f2 \cf6 \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec6 sudo systemctl enable pigpiod\
+	\'97 to disable just sudo systemctl disable pigpiod\
+
+\f0 \cf0 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 8. Give PHP permissions to access i2c with these three lines\
+\pard\pardeftab720\sl450\partightenfactor0
+
+\f2\fs30 \cf5 \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec5 sudo adduser www-data i2c
+\f0\fs24 \cf0 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f3\fs32 \cf7 \cb8 \CocoaLigature0 sudo chown www-data:www-data /dev/i2c-1
+\f0\fs24 \cf0 \cb1 \CocoaLigature1 \
+\pard\pardeftab720\sl304\partightenfactor0
+
+\f4\fs20\fsmilli10154 \cf9 \cb10 \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec9 sudo usermod -a -G gpio www-data\cb1 \
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 \
+
+\f2 \cf5 \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec5 \
+}
