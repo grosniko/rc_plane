@@ -58,6 +58,7 @@ function addToUI(text){
 
 function control(e){
   if(document.getElementById("arrows").checked){
+      if(e.keyCode === 65){document.getElementById("arrows").checked = false}
       e.preventDefault();
       e = e || window.event;
       var type_cb = document.getElementById("ctrl_type")
@@ -107,6 +108,8 @@ function control(e){
         }
         addToUI("")
       }
+  } else if(e.keyCode === 65){
+    document.getElementById("arrows").checked = true
   }
 }
 

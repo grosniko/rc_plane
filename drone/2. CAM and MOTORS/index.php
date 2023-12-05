@@ -329,6 +329,68 @@
             <div class="panel panel-default">
                <div class="panel-heading">
                   <h2 class="panel-title">
+                     <a data-toggle="collapse" data-parent="#accordion" href="#collapseFour">Flight Control</a>
+                  </h2>
+               </div>
+               <div id="collapseFour" class="panel-collapse collapse">
+                  <legend>Direction Control</legend>
+                  <p>PCA channels: cam_x=0, cam_y=1, elevator=12, rudder=13, left aileron=14, right aileron=15</p>
+                  <div class="panel-body">
+                      <p>Roll calibrated - 25 min, 105 max, 65 center for ailerons</p>
+                     <input id="arrows" type="checkbox" value="Use Arrows" onclick="addToUI('')">
+                     <label for="arrows">Control (Arrows - press "a" to toggle)</label>
+                     <input id="ctrl_type" type="checkbox" value="Use Arrows" onclick="addToUI('')">
+                     <label for="ctrl_type">Cam Control (press "c" to toggle)</label>
+                     <input id="faster" type="checkbox" value="Use Arrows" onclick="addToUI('')">
+                     <label for="faster">Faster Movement (press "v" to toggle)</label>
+                  </div>
+                  <div class="panel-body">
+                     <input type="range" onchange="move_servo(this)" id="roll" min="25" max="105" value=65>
+                     <label for="roll">roll</label>
+                     <input type="range" onchange="move_servo(this)" id="yaw" min="0" max="180" value=90>
+                     <label for="yaw">yaw</label>
+                  </div>
+                  <div class="panel-body">
+                     <input type="range" onchange="move_servo(this)" id="cam_x" min="0" max="180" value=90>
+                     <label for="cam_x">camera_x</label>
+                     <input type="range" onchange="move_servo(this)" id="cam_y" min="0" max="180" value=90>
+                     <label for="cam_y">camera_y</label>
+                  </div>
+                   <div class="panel-body">
+                     <fieldset>
+                       <legend>Motor Power</legend>
+                       <p>For propeller motor, adjust pulse width levels between 700 and 2100, depending on battery and charge</p>
+                       <button name="OK" value="OK" onclick="motor_power()">OK</button>
+                       <div>
+                         <input onchange="motor_power()" type="radio" id="off" name="drone" value="off" checked />
+                         <label for="huey">OFF</label>
+                       </div>
+
+                       <div>
+                         <input onchange="motor_power()" type="radio" id="low" name="drone" value="low" />
+                         <label for="low">LOW</label>
+                         <input id="low_val" value = 1070>
+                       </div>
+
+                       <div>
+                         <input onchange="motor_power()" type="radio" id="mid" name="drone" value="mid" />
+                         <label for="mid">MID</label>
+                         <input id="mid_val" value = 1570>
+                       </div>
+
+                       <div>
+                         <input onchange="motor_power()" type="radio" id="high" name="drone" value="high" />
+                         <label for="high">HIGH</label>
+                         <input id="high_val" value = 2070>
+                       </div>
+                     </fieldset>
+                  </div>
+
+               </div>
+            </div>
+            <div class="panel panel-default">
+               <div class="panel-heading">
+                  <h2 class="panel-title">
                      <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">Camera Settings</a>
                   </h2>
                </div>
@@ -640,67 +702,7 @@
                   </div>
                </div>
             </div>
-            <div class="panel panel-default">
-               <div class="panel-heading">
-                  <h2 class="panel-title">
-                     <a data-toggle="collapse" data-parent="#accordion" href="#collapseFour">Flight Control</a>
-                  </h2>
-               </div>
-               <div id="collapseFour" class="panel-collapse collapse">
-                  <legend>Direction Control</legend>
-                  <p>PCA channels: cam_x=0, cam_y=1, elevator=12, rudder=13, left aileron=14, right aileron=15</p>
-                  <div class="panel-body">
-                     <input id="arrows" type="checkbox" value="Use Arrows" onclick="addToUI('')">
-                     <label for="arrows">Control (Arrows)</label>
-                     <input id="ctrl_type" type="checkbox" value="Use Arrows" onclick="addToUI('')">
-                     <label for="ctrl_type">Cam Control (press "c" to toggle)</label>
-                     <input id="faster" type="checkbox" value="Use Arrows" onclick="addToUI('')">
-                     <label for="faster">Faster Movement (press "v" to toggle)</label>
-                  </div>
-                  <div class="panel-body">
-                     <input type="range" onchange="move_servo(this)" id="roll" min="0" max="180" value=90>
-                     <label for="roll">roll</label>
-                     <input type="range" onchange="move_servo(this)" id="yaw" min="0" max="180" value=90>
-                     <label for="yaw">yaw</label>
-                  </div>
-                  <div class="panel-body">
-                     <input type="range" onchange="move_servo(this)" id="cam_x" min="0" max="180" value=90>
-                     <label for="cam_x">camera_x</label>
-                     <input type="range" onchange="move_servo(this)" id="cam_y" min="0" max="180" value=90>
-                     <label for="cam_y">camera_y</label>
-                  </div>
-                   <div class="panel-body">
-                     <fieldset>
-                       <legend>Motor Power</legend>
-                       <p>For propeller motor, adjust pulse width levels between 700 and 2100, depending on battery and charge</p>
-                       <button name="OK" value="OK" onclick="motor_power()">OK</button>
-                       <div>
-                         <input onchange="motor_power()" type="radio" id="off" name="drone" value="off" checked />
-                         <label for="huey">OFF</label>
-                       </div>
 
-                       <div>
-                         <input onchange="motor_power()" type="radio" id="low" name="drone" value="low" />
-                         <label for="low">LOW</label>
-                         <input id="low_val" value = 1070>
-                       </div>
-
-                       <div>
-                         <input onchange="motor_power()" type="radio" id="mid" name="drone" value="mid" />
-                         <label for="mid">MID</label>
-                         <input id="mid_val" value = 1570>
-                       </div>
-
-                       <div>
-                         <input onchange="motor_power()" type="radio" id="high" name="drone" value="high" />
-                         <label for="high">HIGH</label>
-                         <input id="high_val" value = 2070>
-                       </div>
-                     </fieldset>
-                  </div>
-
-               </div>
-            </div>
             <div class="panel panel-default">
                <div class="panel-heading">
                   <h2 class="panel-title">
